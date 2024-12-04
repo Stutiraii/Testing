@@ -2,7 +2,7 @@ import com.google.java.contract.Ensures;
 import com.google.java.contract.Invariant;
 import com.google.java.contract.Requires;
 
-//Add an invariant here.
+@Invariant("data >= 0") // Ensures data is always non-negative
 public class Natural implements Comparable<Natural> {
 	private int data;
 
@@ -10,51 +10,65 @@ public class Natural implements Comparable<Natural> {
 
 	@Override
 	public boolean equals(Object o) {
-		if(!(o instanceof Natural)) return false;
+		if (!(o instanceof Natural))
+			return false;
 		Natural n = (Natural) o;
-		return data==n.data;
+		return data == n.data;
 	}
-	
-	public int compareTo(Natural n) { 
-		return Integer.compare(data, n.data); 
+
+	public int compareTo(Natural n) {
+		return Integer.compare(data, n.data);
 	}
-	
+
 	public Natural(Natural n) {
 		this(n.data);
 	}
 
 	@Override
 	public String toString() {
-		return Integer.toString(data); 
+		return Integer.toString(data);
 	}
 
 	// Add contracts to all following methods.
-	
 
+	@Requires("d>=0")
+	@Ensures("data==d")
 	public Natural(int d) {
 		data = d;
 	}
-	
+
+	@Requires("data<Integer.MAX_VALUE")
+	@Ensures("data ==old(data)+1")
 	public void increment() {
-		data++; 
+		data++;
 	}
-	
+
+	@Requires("data>0")
+	@Ensures("data ==old(data)-1")
 	public void decrement() {
 		data--;
 	}
-	
+
+	@Requires("n != null && (long)data + n.data <= Integer.MAX_VALUE")
+	@Ensures("data == old(data) + n.data")
 	public void add(Natural n) {
 		data += n.data;
 	}
-	
+
+	@Requires("n != null && data >= n.data")
+	@Ensures("data == old(data)-n.data")
 	public void subtract(Natural n) {
 		data -= n.data;
 	}
-	
+
+	@Requires("n != null && (long)data * n.data <= Integer.MAX_VALUE")
+	@Ensures("data == old(data)*n.data")
 	public void multiply(Natural n) {
-		data *= n.data;
+		data *= n.data; 
 	}
-	
+
+	@Requires("n != null && n.data > 0")
+	@Ensures("data == old(data)/n.data")
 	public void divide(Natural n) {
 		data /= n.data;
 	}
